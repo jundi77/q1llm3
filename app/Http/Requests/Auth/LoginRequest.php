@@ -26,6 +26,6 @@ class LoginRequest extends FormRequest
       return [
         'no_hp' => ['required' ],
         'password' => ['required']
-      ]
+      ];
     }
 }

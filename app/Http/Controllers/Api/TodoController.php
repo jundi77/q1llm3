@@ -1,25 +1,27 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TodoRequest;
 use Illuminate\Http\Request;
-use App\Todo;
-
+use App\Models\Todo;
+use App\Http\Resources\TodoResource;
+use App\Events\TodoCreatedEvent;
+use App\Mail\TodoCreatedMail;
 
 class TodoController extends Controller
 {
-  public function index(){
+    public function index(){
 
-      $todos = Todo::where('user_id' , user()->id)->orderBy('created_at' , 'desc')->get();
+      $todos = Todo::where('user_id' , auth()->user()->id)->orderBy('created_at' , 'desc')->get();
 
       return TodoResource::collection($todos);
     }
 
     public function store(TodoRequest $request){
 
-      $todo = auth()->user()->create([
+      $todo = Todo::create([
         'text' => $request->text,
         'done' => 0
       ]);
@@ -30,7 +32,7 @@ class TodoController extends Controller
     }
 
     public function delete($id){
-      Todo::destroys($id);
+      Todo::destroy($id);
       return 'success';
     }
 
@@ -46,6 +48,6 @@ class TodoController extends Controller
         'done' => $update
       ]);
 
-      return new TodoResources($todos);
+      return new TodoResource($todo);
     }
 }
